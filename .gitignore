@@ -128,3 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .idea/
+sample_result.yaml
+cfr/logs/progress.csv
+sample_result.yaml

@@ -145,15 +145,22 @@ def train(num_iter, log_schedule):
     game = KuhnPoker()
     strategy_profile = get_initial_strategy_profile(game.root, game.num_players)
     average_strategy_profile = deepcopy(strategy_profile)
+    values = 0
+    count = 0
     for t in tqdm(range(num_iter)):
         update_pi(game.root, strategy_profile, average_strategy_profile, [1.0 for _ in range(game.num_players + 1)], [1.0 for _ in range(game.num_players + 1)], [1.0 for _ in range(game.num_players + 1)])
-        update_node_values(game.root, strategy_profile)
+        values += update_node_values(game.root, strategy_profile)
+        count += 1
         exploitability = get_exploitability(game, average_strategy_profile)
         update_strategy(strategy_profile, average_strategy_profile, game.information_sets)
         if t % log_schedule(t) == 0:
             logger.logkv("t", t)
             logger.logkv("exploitability", exploitability)
+            logger.logkv("values", values/(count))
             logger.dumpkvs()
+            count = 0
+            values = 0
+            export_strategy_profile_to_yaml(average_strategy_profile)
     return average_strategy_profile
 
 
